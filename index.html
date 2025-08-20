@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cypress Demo App</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; background: #f9f9f9; }
+    nav a { margin-right: 15px; padding: 8px 12px; background: #007bff; color: white; border-radius: 6px; text-decoration: none; }
+    nav a:hover { background: #0056b3; }
+    section { margin-top: 50px; padding: 20px; border: 1px solid #ccc; border-radius: 8px; background: white; }
+    h2 { color: #333; }
+    table, th, td { border: 1px solid #aaa; border-collapse: collapse; padding: 8px; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <h1>Cypress Demo Web App</h1>
+  <nav>
+    <a href="#login">Login</a>
+    <a href="#register">Register</a>
+    <a href="#job">Job Application</a>
+    <a href="#users">Users Table</a>
+    <a href="#upload">File Upload</a>
+    <a href="#download">File Download</a>
+    <a href="#delete">Delete Confirmation</a>
+    <a href="#products">Products</a>
+    <a href="#dashboard">Dashboard</a>
+  </nav>
+
+  <!-- 🔑 Login Page -->
+  <section id="login">
+    <h2>Login</h2>
+    <form onsubmit="login(event)">
+      <input id="username" placeholder="Username"><br><br>
+      <input id="password" type="password" placeholder="Password"><br><br>
+      <button type="submit">Login</button>
+    </form>
+    <p id="login-msg"></p>
+  </section>
+
+  <!-- 📝 Register -->
+  <section id="register">
+    <h2>Register</h2>
+    <form onsubmit="register(event)">
+      <input id="reg-name" placeholder="Name"><br><br>
+      <input id="reg-email" type="email" placeholder="Email"><br><br>
+      <input id="reg-pass" type="password" placeholder="Password"><br><br>
+      <input id="reg-confirm" type="password" placeholder="Confirm Password"><br><br>
+      <button type="submit">Submit</button>
+    </form>
+    <p id="reg-msg"></p>
+  </section>
+
+  <!-- 💼 Job Application -->
+  <section id="job">
+    <h2>Job Application</h2>
+    <form onsubmit="jobApply(event)">
+      <label>Job Role:</label>
+      <select id="jobRole">
+        <option value="">--Select--</option>
+        <option value="QA Engineer">QA Engineer</option>
+        <option value="Developer">Developer</option>
+        <option value="Manager">Manager</option>
+      </select><br><br>
+      <input type="checkbox" id="newsletter"> Subscribe to newsletter <br><br>
+      <button type="submit">Submit</button>
+    </form>
+    <p id="job-msg"></p>
+  </section>
+
+  <!-- 👥 Users Table -->
+  <section id="users">
+    <h2>Users Table</h2>
+    <table id="users-table">
+      <tr><th>Name</th><th>Email</th><th>Role</th></tr>
+      <tr><td>John Doe</td><td>john@example.com</td><td>Admin</td></tr>
+      <tr><td>Jane Smith</td><td>jane@example.com</td><td>User</td></tr>
+      <tr><td>Test User</td><td>testuser@example.com</td><td>Tester</td></tr>
+    </table>
+  </section>
+
+  <!-- 📤 File Upload -->
+  <section id="upload">
+    <h2>File Upload</h2>
+    <input type="file" id="fileInput" onchange="uploadFile()"><br><br>
+    <p id="upload-msg"></p>
+  </section>
+
+  <!-- 📥 File Download -->
+  <section id="download">
+    <h2>File Download</h2>
+    <button onclick="downloadFile()">Download Report</button>
+    <p id="download-msg"></p>
+  </section>
+
+  <!-- 🗑️ Delete Confirmation -->
+  <section id="delete">
+    <h2>Delete Action</h2>
+    <button onclick="deleteAction()">Delete Item</button>
+  </section>
+
+  <!-- 🛒 Products (API Fetch Simulation) -->
+  <section id="products">
+    <h2>Products</h2>
+    <button onclick="loadProducts()">Load Products</button>
+    <ul id="products-list"></ul>
+  </section>
+
+  <!-- 📊 Dashboard (Wait for API Simulation) -->
+  <section id="dashboard">
+    <h2>Dashboard</h2>
+    <button onclick="loadDashboard()">Load Dashboard</button>
+    <p id="dashboard-msg"></p>
+  </section>
+
+  <script>
+    // 🔑 Login
+    function login(e) {
+      e.preventDefault()
+      const user = document.getElementById("username").value
+      const pass = document.getElementById("password").value
+      if (user === "testuser" && pass === "Password123") {
+        document.getElementById("login-msg").innerText = "Welcome " + user
+      } else {
+        document.getElementById("login-msg").innerText = "Invalid credentials"
+      }
+    }
+
+    // 📝 Register
+    function register(e) {
+      e.preventDefault()
+      const name = document.getElementById("reg-name").value
+      const email = document.getElementById("reg-email").value
+      const pass = document.getElementById("reg-pass").value
+      const confirm = document.getElementById("reg-confirm").value
+      if (!name || !email || !pass || !confirm) {
+        document.getElementById("reg-msg").innerText = "All fields are required"
+      } else if (pass !== confirm) {
+        document.getElementById("reg-msg").innerText = "Passwords do not match"
+      } else {
+        document.getElementById("reg-msg").innerText = "Registration successful"
+      }
+    }
+
+    // 💼 Job
+    function jobApply(e) {
+      e.preventDefault()
+      const role = document.getElementById("jobRole").value
+      const subscribed = document.getElementById("newsletter").checked
+      document.getElementById("job-msg").innerText =
+        role + " | " + (subscribed ? "Subscribed" : "Not Subscribed")
+    }
+
+    // 📤 Upload
+    function uploadFile() {
+      const file = document.getElementById("fileInput").files[0]
+      if (file) {
+        document.getElementById("upload-msg").innerText = "Uploaded: " + file.name
+      }
+    }
+
+    // 📥 Download
+    function downloadFile() {
+      const blob = new Blob(["id,name,score\n1,John,85\n2,Jane,90\n3,Test,75"], { type: "text/csv" })
+      const link = document.createElement("a")
+      link.href = URL.createObjectURL(blob)
+      link.download = "report.csv"
+      link.click()
+      document.getElementById("download-msg").innerText = "Report downloaded!"
+    }
+
+    // 🗑️ Delete
+    function deleteAction() {
+      alert("Are you sure you want to delete?")
+    }
+
+    // 🛒 Products
+    function loadProducts() {
+      const products = ["Real Product A", "Real Product B", "Real Product C"]
+      const ul = document.getElementById("products-list")
+      ul.innerHTML = ""
+      products.forEach(p => {
+        const li = document.createElement("li")
+        li.innerText = p
+        ul.appendChild(li)
+      })
+    }
+
+    // 📊 Dashboard
+    function loadDashboard() {
+      setTimeout(() => {
+        document.getElementById("dashboard-msg").innerText = "Dashboard Data Loaded"
+      }, 1500) // simulate API delay
+    }
+  </script>
+</body>
+</html>
